@@ -1,0 +1,14 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Blizzard Developer API - Community OAuth profile API.
+  termsOfService: https://dev.battle.net/policy
+schemes:
+  - https
+produces:
+  - application/json
+consumes:
+  - application/json
+externalDocs:
+  description: Blizzard Development documentation
+  url: https://dev.battle.net/io-docs

@@ -1,0 +1,81 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Blizzard Developer API - Diablo 3 community API.
+  termsOfService: https://dev.battle.net/policy
+schemes:
+  - https
+produces:
+  - application/json
+consumes:
+  - application/json
+externalDocs:
+  description: Blizzard Development documentation
+  url: https://dev.battle.net/io-docs
+tags:
+  - name: profile
+  - name: data
+  - name: d3
+paths:
+  /d3/profile/{battleTag}/:
+    get:
+      summary: Returns the career profile of a Battle Tag
+      operationId: getCareerProfile
+      tags:
+        - profile
+        - d3
+      parameters:
+        - $ref: '#/parameters/battleTag'
+        - $ref: '#/parameters/locale'
+        - $ref: '#/parameters/callback'
+      responses:
+        default:
+          description: Default response
+      security:
+        - api_key: []
+  /d3/profile/{battleTag}/hero/{id}:
+    get:
+      summary: Returns the career profile of a Battle Tag
+      operationId: getHeroProfile
+      tags:
+        - profile
+        - d3
+      parameters:
+        - $ref: '#/parameters/battleTag'
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          description: The hero id of the hero to look up
+          required: true
+        - $ref: '#/parameters/locale'
+        - $ref: '#/parameters/callback'
+      responses:
+        default:
+          description: Default response
+      security:
+        - api_key: []
+securityDefinitions:
+  api_key:
+    type: apiKey
+    in: query
+    name: apikey
+parameters:
+  locale:
+    name: locale
+    in: query
+    type: string
+    description: 'What locale to use in the response'
+    required: false
+  callback:
+    name: callback
+    in: query
+    type: string
+    description: 'Request data to be returned as a JsonP callback'
+    required: false
+  battleTag:
+    name: battleTag
+    in: path
+    type: string
+    description: 'Battle Tag in name-#### format (ie. Noob-1234)'
+    required: true
