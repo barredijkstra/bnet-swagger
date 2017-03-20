@@ -122,6 +122,8 @@ paths:
         - $ref: '#/parameters/locale'
         - $ref: '#/parameters/callback'
       responses:
+        '200':
+          $ref: '#/responses/artisanResponse'
         default:
           $ref: '#/responses/defaultErrorResponse'
       security:
@@ -163,11 +165,231 @@ definitions:
         title: error reason
         description: The reason for the error.
         type: string
+    required:
+      - code
+      - reason
+  baseItem:
+    title: item
+    type: object
+    description: Basic item information
+    properties:
+      id:
+        title: id
+        description: The id of the item
+        type: string
+      name:
+        title: name
+        description: The name of the item
+        type: string
+      icon:
+        title: icon
+        description: The name of the item icon
+        type: string
+      displayColor:
+        title: displayColor
+        description: The display color of the item
+        type: string
+        enum:
+          - white
+          - blue
+          - yellow
+          - orange
+          - green
+      tooltipParams:
+        title: tooltipParams
+        description: Tooltip parameter string for the item
+        type: string
+    required:
+      - id
+      - name
+      - icon
+      - displayColor
+      - tooltipParams
+  artisanRecipeReagent:
+    title: reagents
+    description: Reagent required for crafting a recipe
+    type: object
+    properties:
+      quanity:
+        title: quanity
+        description: Amount of reagent items required for crafting
+        type: integer
+        format: int32
+      item:
+        $ref: '#/definitions/baseItem'
+    required:
+      - quantity
+      - item
+  artisanRecipe:
+    title: recipe
+    description: Recipe that can be crafted by an artisan
+    type: object
+    properties:
+      id:
+        title: id
+        description: The id of the recipe
+        type: string
+      slug:
+        title: slug
+        description: The slug for the recipe
+        type: string
+      name:
+        title: name
+        description: The name of the recipe
+        type: string
+      cost:
+        title: cost
+        description: The cost in gold for crafting the recipe
+        type: integer
+        format: int64
+      reagents:
+        title: reagentsreq
+        description: The reagents for crafting the recipe
+        type: array
+        items:
+          $ref: '#/definitions/artisanRecipeReagent'
+      itemProduced:
+        $ref: '#/definitions/baseItem'
+    required:
+      - id
+      - slug
+      - name
+      - cost
+      - reagents
+      - itemProduced
+  artisanTrainingLevel:
+    title: level
+    description: The level of training for an artisan
+    type: object
+    properties:
+      tier:
+        title: tier
+        description: The training tier
+        type: integer
+        format: int32
+      tierLevel:
+        title: tierLevel
+        description: The level in the training tier # TODO double check
+        type: integer
+        format: int32
+      percent:
+        title: percent
+        description: The percentage completed of the level # TODO double check
+        type: integer
+        format: int32
+      trainedRecipes:
+        title: trainedRecipes
+        description: Recipes that are learned upon training of the artisan
+        type: array
+        items:
+          $ref: '#/definitions/artisanRecipe'
+      taughtRecipes:
+        title: taughtRecipes
+        description: Recipes that can be taught to an artisan of the given level
+        type: array
+        items:
+          $ref: '#/definitions/artisanRecipe'
+      upgradeCost:
+        title: upgradeCost
+        description: The gold required for upgrading
+        type: integer
+        format: int64
+      upgradeItems:
+        title: upgradeItems
+        description: The items required for upgrading
+        type: array
+        items:
+          $ref: '#/definitions/baseItem'
+    required:
+      - tier
+      - tierLevel
+      - percent
+      - upgradeCost
+  artisanTrainingTier:
+    title: tier
+    description: The training tier of the artisan
+    type: object
+    properties:
+      tier:
+        title: tier
+        description: The training tier
+        type: integer
+        format: int32
+      levels:
+        title: levels
+        description: The available training levels
+        type: array
+        items:
+          $ref: '#/definitions/artisanTrainingLevel'
+    required:
+      - tier
+      - levels
+  artisanTraining:
+    title: training
+    description: Available training for the artisan
+    type: object
+    properties:
+      tiers:
+        title: tiers
+        description: Available training tiers
+        type: array
+        items:
+          $ref: '#/definitions/artisanTrainingTier'
+    required:
+      - tiers
+  artisanResult:
+    title: artisan
+    description: Artisan data
+    type: object
+    properties:
+      slug:
+        title: slug
+        description: The slug for the artisan
+        type: string
+      name:
+        title: name
+        description: The name of the artisan
+        type: string
+      portrait:
+        title: portrait
+        description: The name of the artisan portrait
+        type: string
+      training:
+        $ref: '#/definitions/artisanTraining'
+    required:
+      - slug
+      - name
+      - portrait
+      - training
 responses:
   defaultErrorResponse:
     description: 'Unexpected error'
     schema:
       $ref: '#/definitions/errorResult'
+    headers:
+      X-Plan-Qps-Allotted:
+        description: 'The number of allowed requests per second'
+        type: integer
+        format: int64
+      X-Plan-Qps-Current:
+        description: 'The number of executed requests in the last second'
+        type: integer
+        format: int64
+      X-Plan-Quota-Allotted:
+        description: 'The number of allowed requests in the current period'
+        type: integer
+        format: int64
+      X-Plan-Quota-Current:
+        description: 'The number of executed requests in the current period'
+        type: integer
+        format: int64
+      X-Plan-Quota-Reset:
+        description: 'The timesstamp of when the used quota resets'
+        type: string
+  artisanResponse:
+    description: 'The artisan data'
+    schema:
+      $ref: '#/definitions/artisanResult'
     headers:
       X-Plan-Qps-Allotted:
         description: 'The number of allowed requests per second'
