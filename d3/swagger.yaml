@@ -29,8 +29,10 @@ paths:
         - $ref: '#/parameters/locale'
         - $ref: '#/parameters/callback'
       responses:
+        '200':
+          description: The character profile.
         default:
-          description: Default response
+          $ref: '#/responses/defaultErrorResponse'
       security:
         - api_key: []
   /d3/profile/{battleTag}/hero/{id}:
@@ -52,7 +54,76 @@ paths:
         - $ref: '#/parameters/callback'
       responses:
         default:
-          description: Default response
+          $ref: '#/responses/defaultErrorResponse'
+      security:
+        - api_key: []
+  /d3/data/item/{data}:
+    get:
+      summary: Returns data for a profile item
+      operationId: getItemData
+      tags:
+        - profile
+        - data
+        - d3
+      parameters:
+        - name: data
+          in: path
+          type: string
+          description: The item data string (from a profile) containing the item to lookup
+          required: true
+        - $ref: '#/parameters/locale'
+        - $ref: '#/parameters/callback'
+      responses:
+        default:
+          $ref: '#/responses/defaultErrorResponse'
+      security:
+        - api_key: []
+  /d3/data/follower/{follower}:
+    get:
+      summary: Returns data for a follower
+      operationId: getFollowerData
+      tags:
+        - data
+        - d3
+      parameters:
+        - name: follower
+          in: path
+          type: string
+          description: The data about a follower
+          required: true
+          enum:
+            - enchantress
+            - scoundrel
+            - templar
+        - $ref: '#/parameters/locale'
+        - $ref: '#/parameters/callback'
+      responses:
+        default:
+          $ref: '#/responses/defaultErrorResponse'
+      security:
+        - api_key: []
+  /d3/data/artisan/{artisan}:
+    get:
+      summary: Returns data for a profile item
+      operationId: getArtisanData
+      tags:
+        - data
+        - d3
+      parameters:
+        - name: artisan
+          in: path
+          type: string
+          description: The data about an artisan
+          required: true
+          enum:
+            - blacksmith
+            - jeweler
+            - mystic
+        - $ref: '#/parameters/locale'
+        - $ref: '#/parameters/callback'
+      responses:
+        default:
+          $ref: '#/responses/defaultErrorResponse'
       security:
         - api_key: []
 securityDefinitions:
@@ -79,3 +150,41 @@ parameters:
     type: string
     description: 'Battle Tag in name-#### format (ie. Noob-1234)'
     required: true
+definitions:
+  errorResult:
+    type: object
+    description: Object that is return when an error occured with a call.
+    properties:
+      code:
+        title: error code
+        description: The error code.
+        type: string
+      reason:
+        title: error reason
+        description: The reason for the error.
+        type: string
+responses:
+  defaultErrorResponse:
+    description: 'Unexpected error'
+    schema:
+      $ref: '#/definitions/errorResult'
+    headers:
+      X-Plan-Qps-Allotted:
+        description: 'The number of allowed requests per second'
+        type: integer
+        format: int64
+      X-Plan-Qps-Current:
+        description: 'The number of executed requests in the last second'
+        type: integer
+        format: int64
+      X-Plan-Quota-Allotted:
+        description: 'The number of allowed requests in the current period'
+        type: integer
+        format: int64
+      X-Plan-Quota-Current:
+        description: 'The number of executed requests in the current period'
+        type: integer
+        format: int64
+      X-Plan-Quota-Reset:
+        description: 'The timesstamp of when the used quota resets'
+        type: string
